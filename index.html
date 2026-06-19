@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨나의 최애 일러✨</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; background-color: #f0f4f8; text-align: center; padding: 20px; color: #333; margin: 0; }
+        h1 { margin-top: 40px; margin-bottom: 10px; color: #222; text-align: center; }
+        .sub-title { color: #666; margin-bottom: 30px; text-align: center; }
+        #step-1 { display: block; max-width: 800px; margin: 0 auto; }
+        .unit-section { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left; }
+        .unit-name { font-size: 18px; font-weight: bold; color: #00bcd4; border-left: 4px solid #00bcd4; padding-left: 10px; margin-bottom: 15px; }
+        .char-list { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-start; }
+        .char-btn { padding: 10px 18px; font-size: 15px; font-weight: bold; cursor: pointer; border: 1px solid #e0e0e0; border-radius: 20px; background-color: #fafafa; color: #444; transition: 0.2s; }
+        .char-btn:hover { background-color: #00bcd4; color: white; border-color: #00bcd4; transform: translateY(-2px); }
+        #step-2, #step-3 { display: none; text-align: center; }
+        .selected-char-name { font-size: 26px; font-weight: bold; color: #00bcd4; margin-bottom: 20px; margin-top: 30px; text-align: center; }
+        .result-sheet-container { display: flex; justify-content: center; width: 100%; }
+        .result-sheet { display: inline-flex; gap: 20px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 0 auto 30px auto; justify-content: center; }
+        .slot { width: 150px; height: 200px; border: 2px dashed #00bcd4; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: #fafafa; position: relative; text-align: center; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
+        .slot:hover { background: #e0f7fa; transform: scale(1.02); }
+        .slot img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 2; }
+        .final-slot { width: 150px; height: 200px; border: 2px solid #00bcd4; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; background: #fafafa; position: relative; text-align: center; box-sizing: border-box; }
+        .final-slot img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 2; }
+        .slot-info { z-index: 1; padding: 10px; }
+        .slot-info .star-title { font-weight: bold; color: #00bcd4; font-size: 20px; margin-bottom: 5px; display: block; }
+        .slot-info .click-text { font-size: 12px; color: #888; line-height: 1.3; display: block; }
+        .file-input { display: none; }
+        .guide-box { max-width: 500px; margin: 0 auto 30px auto; background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 14px; color: #555; line-height: 1.5; }
+        .action-btn { padding: 12px 30px; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; margin: 10px; transition: 0.2s; display: inline-block; }
+        .cyan-btn { background-color: #00bcd4; color: white; }
+        .cyan-btn:hover { background-color: #0097a7; transform: scale(1.05); }
+        .back-btn { background-color: #333; color: white; padding: 12px 24px; border: none; border-radius: 25px; font-size: 15px; font-weight: bold; cursor: pointer; margin: 10px; transition: 0.2s; display: inline-block; }
+        .back-btn:hover { background-color: #555; }
+        .link-copy-btn { background-color: #4caf50; color: white; }
+        .link-copy-btn:hover { background-color: #43a047; }
+        .twitter-btn { background-color: #1d9bf0; color: white; }
+        .twitter-btn:hover { background-color: #1a8cd8; }
+        .reset-btn { background-color: #f44336; color: white; }
+        .reset-btn:hover { background-color: #d32f2f; }
+        #final-sheet-area { display: flex; justify-content: center; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <h1 id="main-title">✨나의 최애 일러✨</h1>
+
+    <div id="step-1">
+        <p class="sub-title">시트를 제작할 캐릭터를 선택해주세요!</p>
+        <div id="unit-container"></div>
+    </div>
+
+    <div id="step-2">
+        <div class="selected-char-name"><span class="char-text-placeholder">캐릭터 이름</span>의 최애 일러 고르기</div>
+        <div class="guide-box">각 박스를 터치하여 최애 일러스트 사진을 직접 추가해 주세요!</div>
+        <div class="result-sheet-container">
+            <div class="result-sheet" id="edit-sheet">
+                <div class="slot" onclick="triggerUpload(5)">
+                    <div class="slot-info"><span class="star-title">☆5</span><span class="click-text">사진 추가</span></div>
+                    <img id="slot-5" src="" alt="5성" style="display:none;">
+                    <input type="file" id="input-5" class="file-input" accept="image/*" onchange="previewImage(this, 5)">
+                </div>
+                <div class="slot" onclick="triggerUpload(4)">
+                    <div class="slot-info"><span class="star-title">☆4</span><span class="click-text">사진 추가</span></div>
+                    <img id="slot-4" src="" alt="4성" style="display:none;">
+                    <input type="file" id="input-4" class="file-input" accept="image/*" onchange="previewImage(this, 4)">
+                </div>
+                <div class="slot" onclick="triggerUpload(3)">
+                    <div class="slot-info"><span class="star-title">☆3</span><span class="click-text">사진 추가</span></div>
+                    <img id="slot-3" src="" alt="3성" style="display:none;">
+                    <input type="file" id="input-3" class="file-input" accept="image/*" onchange="previewImage(this, 3)">
+                </div>
+            </div>
+        </div>
+        <br>
+        <button class="back-btn" onclick="backToMainFromEditor()">메인으로 이동</button>
+        <button class="action-btn reset-btn" onclick="resetCurrentCharacterData()">이 캐릭터 시트 초기화</button>
+        <button class="cyan-btn action-btn" onclick="goToResult()">시트 완성하기</button>
+    </div>
+
+    <div id="step-3">
+        <div class="selected-char-name"><span class="char-text-placeholder">캐릭터 이름</span> 최애 일러스트 시트 완성</div>
+        <div id="final-sheet-area"></div>
+        <br>
+        <button class="back-btn" onclick="backToEditor()">수정하기</button>
+        <button class="cyan-btn action-btn" onclick="goToHome()">처음으로 돌아가기</button>
+        <button class="action-btn link-copy-btn" onclick="copyPageLink()">링크 복사하기</button>
+        <button class="action-btn twitter-btn" onclick="shareTwitter()">트위터(X)에 공유하기</button>
+    </div>
+
+    <script>
+        const savedData = {};
+        const units = [
+            { name: "fine", members: ["텐쇼인 에이치", "히메미야 토리", "후시미 유즈루", "히비키 와타루"] },
+            { name: "Trickstar", members: ["히다카 호쿠토", "아케호시 스바루", "유우키 마코토", "이사라 마오"] },
+            { name: "유성대", members: ["모리사와 치아키", "신카이 카나타", "나구모 테토라", "타카미네 미도리", "센고쿠 시노부"] },
+            { name: "ALKALOID", members: ["아마기 히이로", "시라토리 아이라", "아야세 마요이", "카제하야 타츠미"] },
+            { name: "Eden", members: ["란 나기사", "토모에 히요리", "사에구사 이바라", "사자나미 쥰"] },
+            { name: "Valkyrie", members: ["이츠키 슈", "카게히라 미카"] },
+            { name: "2wink", members: ["아오이 히나타", "아오이 유우타"] },
+            { name: "Crazy:B", members: ["아마기 린네", "HiMERU", "오우카와 코하쿠", "시이나 니키"] },
+            { name: "UNDEAD", members: ["사쿠마 레이", "하카제 카오루", "오오가미 코가", "오토가리 아도니스"] },
+            { name: "Ra*bits", members: ["마시로 토모야", "니토 나즈나", "텐마 미츠루", "시노 하지메"] },
+            { name: "홍월", members: ["하스미 케이토", "키류 쿠로", "칸자키 소마", "타키 이부키"] },
+            { name: "Knights", members: ["스오우 츠카사", "츠키나가 레오", "세나 이즈미", "사쿠마 리츠", "나루카미 아라시"] },
+            { name: "Switch", members: ["사카사키 나츠메", "아오바 츠무기", "하루카와 소라"] },
+            { name: "MaM", members: ["미케지마 마다라"] },
+            { name: "Esprit", members: ["사기리 에스", "나츠 칸나", "하나무라 후유메", "호죠 라이카"] }
+        ];
+
+        let currentSelectedCharacter = "";
+
+        const unitContainer = document.getElementById('unit-container');
+        units.forEach(unit => {
+            const section = document.createElement('div');
+            section.className = 'unit-section';
+            const title = document.createElement('div');
+            title.className = 'unit-name';
+            title.innerText = unit.name;
+            section.appendChild(title);
+            const list = document.createElement('div');
+            list.className = 'char-list';
+            unit.members.forEach(member => {
+                const btn = document.createElement('button');
+                btn.className = 'char-btn';
+                btn.innerText = member;
+                btn.onclick = () => goToEditor(member);
+                list.appendChild(btn);
+            });
+            section.appendChild(list);
+            unitContainer.appendChild(section);
+        });
+
+        function goToEditor(charName) {
+            currentSelectedCharacter = charName;
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+            const placeholders = document.getElementsByClassName('char-text-placeholder');
+            for(let i=0; i<placeholders.length; i++) { placeholders[i].innerText = charName; }
+            if (savedData[charName]) {
+                [5, 4, 3].forEach(star => {
+                    const slotImg = document.getElementById(`slot-${star}`);
+                    if (savedData[charName][star]) {
+                        slotImg.src = savedData[charName][star];
+                        slotImg.style.display = 'block';
+                    } else {
+                        slotImg.src = "";
+                        slotImg.style.display = 'none';
+                    }
+                });
+            } else { clearEditorDOM(); }
+            window.scrollTo(0, 0);
+        }
+
+        function triggerUpload(star) { document.getElementById(`input-${star}`).click(); }
+
+        function previewImage(input, star) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const slotImg = document.getElementById(`slot-${star}`);
+                    slotImg.src = e.target.result;
+                    slotImg.style.display = 'block';
+                    if (!savedData[currentSelectedCharacter]) { savedData[currentSelectedCharacter] = {}; }
+                    savedData[currentSelectedCharacter][star] = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function goToResult() {
+            const img5 = document.getElementById('slot-5');
+            const img4 = document.getElementById('slot-4');
+            const img3 = document.getElementById('slot-3');
+            if (img5.style.display === 'none' || img4.style.display === 'none' || img3.style.display === 'none') {
+                alert("5성, 4성, 3성 박스를 모두 클릭하여 최애 사진을 채워주세요!");
+                return;
+            }
+            document.getElementById('main-title').innerText = "✨나의 최애 일러✨";
+            const finalArea = document.getElementById('final-sheet-area');
+            finalArea.innerHTML = "";
+            const finalSheet = document.createElement('div');
+            finalSheet.className = 'result-sheet';
+            finalSheet.innerHTML = `
+                <div class="final-slot"><img src="${img5.src}" alt="5성"></div>
+                <div class="final-slot"><img src="${img4.src}" alt="4성"></div>
+                <div class="final-slot"><img src="${img3.src}" alt="3성"></div>
+            `;
+            finalArea.appendChild(finalSheet);
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-3').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function clearEditorDOM() {
+            [5, 4, 3].forEach(star => {
+                const slotImg = document.getElementById(`slot-${star}`);
+                slotImg.src = "";
+                slotImg.style.display = 'none';
+                document.getElementById(`input-${star}`).value = "";
+            });
+        }
+
+        function resetCurrentCharacterData() {
+            if (!confirm(`현재 편집 중인 [${currentSelectedCharacter}] 캐릭터의 시트 사진을 전부 삭제할까요?`)) { return; }
+            delete savedData[currentSelectedCharacter];
+            clearEditorDOM();
+        }
+
+        function backToMainFromEditor() {
+            document.getElementById('main-title').innerText = "✨나의 최애 일러✨";
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-1').style.display = 'block';
+            currentSelectedCharacter = "";
+            window.scrollTo(0, 0);
+        }
+
+        function backToEditor() {
+            document.getElementById('step-3').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+        }
+
+        function goToHome() {
+            document.getElementById('main-title').innerText = "✨나의 최애 일러✨";
+            document.getElementById('step-3').style.display = 'none';
+            document.getElementById('step-1').style.display = 'block';
+            currentSelectedCharacter = "";
+            window.scrollTo(0, 0);
+        }
+
+        function copyPageLink() {
+            const dummyUrl = window.location.href;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(dummyUrl).then(() => { alert("메이커 링크가 클립보드에 복사되었습니다!"); });
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = dummyUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try { document.execCommand('copy'); alert("메이커 링크가 클립보드에 복사되었습니다!"); }
+                catch (err) { alert("링크 복사에 실패했습니다. 주소창의 링크를 직접 복사해 주세요."); }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function shareTwitter() {
+            const text = encodeURIComponent(`내가 고른 [${currentSelectedCharacter}] 최애 일러스트 시트 완성!\n#최애일러메이커\n`);
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`);
+        }
+    </script>
+</body>
+</html>
